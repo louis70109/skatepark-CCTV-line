@@ -83,6 +83,131 @@ def arrange_flex_message(gcal_url: str, action: dict) -> FlexSendMessage:
     })
 
 
+def order_flex(
+    title,
+    place,
+    time,
+    website,
+    image_url="https://scdn.line-apps.com/n/channel_devcenter/img/fx/01_1_cafe.png",
+):
+    return {
+        "type": "bubble",
+        "hero": {
+            "type": "image",
+            "url": image_url,
+            "size": "full",
+            "aspectRatio": "20:13",
+            "aspectMode": "cover",
+            "action": {
+                "type": "uri",
+                "uri": "http://linecorp.com/"
+            }
+        },
+        "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+                {
+                    "type": "text",
+                    "text": title,
+                    "weight": "bold",
+                    "size": "xl"
+                },
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "margin": "lg",
+                    "spacing": "sm",
+                    "contents": [
+                        {
+                            "type": "box",
+                            "layout": "baseline",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "Place",
+                                    "color": "#aaaaaa",
+                                    "size": "sm",
+                                    "flex": 1
+                                },
+                                {
+                                    "type": "text",
+                                    "text": place,
+                                    "wrap": True,
+                                    "color": "#666666",
+                                    "size": "sm",
+                                    "flex": 5
+                                }
+                            ]
+                        },
+                        {
+                            "type": "box",
+                            "layout": "baseline",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "Time",
+                                    "color": "#aaaaaa",
+                                    "size": "sm",
+                                    "flex": 1
+                                },
+                                {
+                                    "type": "text",
+                                    "text": time,
+                                    "wrap": True,
+                                    "color": "#666666",
+                                    "size": "sm",
+                                    "flex": 5
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "spacing": "sm",
+            "contents": [
+                {
+                    "type": "button",
+                    "style": "link",
+                    "height": "sm",
+                    "action": {
+                        "type": "uri",
+                        "label": "WEBSITE",
+                        "uri": website
+                    }
+                },
+                {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [],
+                    "margin": "sm"
+                }
+            ],
+            "flex": 0
+        }
+    }
+
+
+@app.post("/order/consume")
+async def order(request: Request):
+    order_json = order_flex(
+        title="Brown Coffee",
+        place="JCConf",
+        time="10:00~11:00",
+        website="https://jcconf.tw/2023/"
+    )
+    line_bot_api.push_message(
+        'LINE User ID',
+        FlexSendMessage(alt_text="訂餐資訊", contents=order_json)
+    )
+
+
 @app.post("/webhooks/line")
 async def callback(request: Request):
     # get X-Line-Signature header value

@@ -37,7 +37,6 @@ uvicorn
 line-bot-sdk
 openai
 
-
 ## 使用方法
 
 ```
@@ -67,6 +66,8 @@ ngrok http 8080
 10. 之後，您可以在 LINE app 中加入您剛剛建立的 bot 為好友，並開始測試。
 
 ## Google Cloud Platform 佈署
+
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
 
 Clone 此專案
 
