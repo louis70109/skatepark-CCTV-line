@@ -23,3 +23,5 @@ var/
 pokemon_wiki.db-journal
 firebase.json
 .pytest_cache
+venv
+serviceAccountKey.json
