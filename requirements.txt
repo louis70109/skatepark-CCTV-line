@@ -1,5 +1,5 @@
 fastapi
 uvicorn[standard]
-line-bot-sdk
-openai
+line-bot-sdk==2.4.0
 gunicorn
+firebase-admin
