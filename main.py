@@ -52,6 +52,10 @@ def read_doc(collection_name, doc_name):
         logger.info("No such document!")
         return None
 
+def update_doc(collection_name, doc_name, data):
+    doc_ref = db.collection(collection_name).document(doc_name)
+    doc_ref.update(data)
+    logger.debug(f"{collection_name}'s {doc_name} deleted successfully")
 
 logging.basicConfig(level=os.getenv('LOG', 'WARNING'))
 logger = logging.getLogger(__file__)
@@ -60,7 +64,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -222,23 +226,29 @@ async def order(request: Request):
 async def get_user(q: str = ''):
     if q != '':
         doc = read_doc('user', q)
+        print(doc)
         return doc.__dict__['_data']
     return None
 
 
-@app.post("/api/user")
+@app.post("/api/user", status_code=201)
 async def add_user(request: Request):
-    a = await request.body()
-    a = a.decode()
-    b = json.loads(a)
-    create_doc('user', b['userId'], dict(b))
-    return ''
+    body = await request.body()
+    body = body.decode()
+    response = json.loads(body)
+    doc = read_doc('user', response['userId'])
+    data = doc.__dict__['_data']
+    if data is not None and data['mobile'] is not None:
+        update_doc('user', response['userId'], dict(response))
+        print('updated')
+    else:
+        create_doc('user', response['userId'], dict(response))
+    return True
 
 
 @app.get("/api/liff")
 async def add_user():
-
-    return os.environ['LIFF_ID']
+    return {'liffId': os.environ['LIFF_ID']}
 
 
 @app.post("/webhooks/line")
