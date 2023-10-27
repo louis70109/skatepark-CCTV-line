@@ -61,6 +61,8 @@ logging.basicConfig(level=os.getenv('LOG', 'WARNING'))
 logger = logging.getLogger(__file__)
 
 app = FastAPI()
+
+# TODO: check CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
