@@ -2,8 +2,6 @@
 
 ![](https://raw.githubusercontent.com/louis70109/calendar-linebot/main/screenshot/user-flow.png)
 
-這是一個用 Python 撰寫的 FastAPI 應用程式，它運用 OpenAI 的 GPT-3 模型與 LINE Bot API 進行文字訊息處理，並將處理後的文字訊息轉換成 Google Calendar 給使用者，可以加入行事曆。
-
 ## 主要功能
 
 [![Everything Is AWESOME](https://img.youtube.com/vi/5JTU15VtDAw/0.jpg)](https://www.youtube.com/watch?v=5JTU15VtDAw 'Everything Is AWESOME')
@@ -14,7 +12,6 @@
 
 ## 加入好友
 
-<img src="https://raw.githubusercontent.com/louis70109/calendar-linebot/main/screenshot/qrcode..jpeg" controls="controls" width="300" height="300">
 
 ## 環境變數
 
@@ -24,27 +21,11 @@
 - LOG: 紀錄的等級，例如 'WARNING'、'INFO'、'DEBUG' 等。
 - LINE_CHANNEL_ACCESS_TOKEN: LINE Channel 的 Access Token。
 - LINE_CHANNEL_SECRET: LINE Channel 的 Secret。
-- OPENAI_API_KEY: OpenAI 的 API Key。
 - PORT: 預設 8080
 
 ## 安裝需求
 
 你需要 Python 3.6 或以上版本的環境來運行此應用程式，並確保安裝以下的 Python 套件：
-
-FastAPI
-python-dotenv
-uvicorn
-line-bot-sdk
-openai
-
-## 使用方法
-
-```
-git clone https://github.com/louis70109/calendar-linebot
-cd calendar-linebot/
-pip install -r requirements.txt
-python main.py
-```
 
 透過 ngrok 建立暫時含有 https 的網址，並設定在 LINE Developer Console
 
