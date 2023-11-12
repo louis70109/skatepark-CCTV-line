@@ -15,7 +15,7 @@ def get_neihu_meiti_image():
     options.add_argument("--no-sandbox")
 
     options.page_load_strategy = 'none'
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    driver = webdriver.Chrome(options=options)
 
     # Go to page
     driver.get(url)
