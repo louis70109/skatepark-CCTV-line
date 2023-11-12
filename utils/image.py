@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
 def get_neihu_meiti_image():
 
@@ -14,7 +15,7 @@ def get_neihu_meiti_image():
     options.add_argument("--no-sandbox")
 
     options.page_load_strategy = 'none'
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
     # Go to page
     driver.get(url)
