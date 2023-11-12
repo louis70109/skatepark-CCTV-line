@@ -1,18 +1,42 @@
 import json
 import logging
 import os
+import sys
 import tempfile
+
+import requests
+from utils.github import Github
+
+from utils.image import get_neihu_meiti_image
 
 if os.getenv('API_ENV') != 'production':
     from dotenv import load_dotenv
 
     load_dotenv()
 
-from fastapi import FastAPI, Request
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from linebot import LineBotApi, WebhookHandler
-from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, FlexSendMessage
+
+from linebot.v3.webhook import WebhookParser
+from linebot.v3.messaging import (
+    AsyncApiClient,
+    AsyncMessagingApi,
+    Configuration,
+    ReplyMessageRequest,
+    PushMessageRequest,
+    TextMessage,
+    ImageMessage
+)
+from linebot.v3.exceptions import (
+    InvalidSignatureError
+)
+from linebot.v3.webhooks import (
+    MessageEvent,
+    TextMessageContent,
+    ImageMessageContent
+)
+
 import uvicorn
 import firebase_admin
 from firebase_admin import credentials
@@ -52,10 +76,12 @@ def read_doc(collection_name, doc_name):
         logger.info("No such document!")
         return None
 
+
 def update_doc(collection_name, doc_name, data):
     doc_ref = db.collection(collection_name).document(doc_name)
     doc_ref.update(data)
     logger.debug(f"{collection_name}'s {doc_name} deleted successfully")
+
 
 logging.basicConfig(level=os.getenv('LOG', 'WARNING'))
 logger = logging.getLogger(__file__)
@@ -70,33 +96,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-line_bot_api = LineBotApi(os.getenv('LINE_CHANNEL_ACCESS_TOKEN'))
-handler = WebhookHandler(os.getenv('LINE_CHANNEL_SECRET'))
 
+channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
+channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+if channel_secret is None:
+    print('Specify LINE_CHANNEL_SECRET as environment variable.')
+    sys.exit(1)
+if channel_access_token is None:
+    print('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
+    sys.exit(1)
 
-def arrange_flex_message(gcal_url: str, action: dict) -> FlexSendMessage:
-    return FlexSendMessage(alt_text='行事曆網址', contents={
-        "type": "bubble",
-        "footer": {
-                "type": "box",
-                "layout": "vertical",
-                "spacing": "sm",
-                "contents": [
-                    {
-                        "type": "button",
-                        "style": "link",
-                        "height": "sm",
-                        "action": {
-                            "type": "uri",
-                            "label": "WEBSITE",
-                            "uri": gcal_url
-                        }
-                    },
-                    action
-                ],
-            "flex": 0
-        }
-    })
+configuration = Configuration(
+    access_token=channel_access_token
+)
+
+async_api_client = AsyncApiClient(configuration)
+line_bot_api = AsyncMessagingApi(async_api_client)
+parser = WebhookParser(channel_secret)
 
 
 def order_flex(
@@ -228,58 +244,90 @@ async def order(request: Request):
 async def get_user(q: str = ''):
     if q != '':
         doc = read_doc('user', q)
-        print(doc)
+        logging.info(f'Firebase data is: {doc}')
         return doc.__dict__['_data']
     return None
 
 
-@app.post("/api/user", status_code=201)
+@app.post("/api/user")
 async def add_user(request: Request):
     body = await request.body()
     body = body.decode()
     response = json.loads(body)
     doc = read_doc('user', response['userId'])
     data = doc.__dict__['_data']
-    if data is not None and data['mobile'] is not None:
-        update_doc('user', response['userId'], dict(response))
-        print('updated')
-    else:
-        create_doc('user', response['userId'], dict(response))
-    return True
+    try:
+        if data is not None and data.get('mobile') is not None:
+            update_doc('user', response['userId'], dict(response))
+        else:
+            create_doc('user', response['userId'], dict(response))
+        logging.info(f'Create success, data is: {data}')
+        return ''
+    except Exception as e:
+        logging.info(f'Create error, error is: e')
+        return {'status': 'Post got some error'}
 
 
 @app.get("/api/liff")
 async def add_user():
     return {'liffId': os.environ['LIFF_ID']}
 
+@app.get("/capture")
+async def capture():
+
+    image_b64 = get_neihu_meiti_image()
+    return {'image': image_b64}
 
 @app.post("/webhooks/line")
-async def callback(request: Request):
-    # get X-Line-Signature header value
+async def handle_callback(request: Request):
     signature = request.headers['X-Line-Signature']
 
     # get request body as text
     body = await request.body()
-    body = body.decode('utf-8')
+    body = body.decode()
 
-    # handle webhook body
     try:
-        handler.handle(body, signature)
+        events = parser.parse(body, signature)
     except InvalidSignatureError:
-        print("Invalid signature. Please check your channel access token/channel secret.")
-        return 'Invalid signature. Please check your channel access token/channel secret.'
+        raise HTTPException(status_code=400, detail="Invalid signature")
 
+    for event in events:
+        print(event)
+        if not isinstance(event, MessageEvent):
+            continue
+        if not isinstance(event.message, TextMessageContent):
+            continue
+
+        await line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text='請稍候...查詢中')]
+            )
+        )
+        b64_file = get_neihu_meiti_image()
+        github = Github()
+        res = requests.put(
+            headers={
+                "Accept": "application/vnd.github+json",
+                "Authorization": f"Bearer {os.getenv('GITHUB')}"
+            },
+            json={
+                "message": f"✨ Commit",
+                "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
+                "content": b64_file,
+                "branch": "master"},
+            url=f"https://api.github.com/repos/{github.repo_name}/contents/images/image.png"
+        )
+        response_msg = res.json()
+        url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/image.png"
+        await line_bot_api.push_message(push_message_request=PushMessageRequest(
+            to=event.source.user_id,
+            messages=[ImageMessage(
+                originalContentUrl=url,
+                previewImageUrl=url,
+                quoteToken=event.message.quote_token)],
+        ))
     return 'OK'
-
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    text = event.message.text
-
-    line_bot_api.reply_message(
-        event.reply_token,
-        [TextSendMessage(text=text)]
-    )
 
 
 if __name__ == "__main__":

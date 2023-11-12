@@ -5,5 +5,5 @@ RUN pip install -r requirements.txt
 
 WORKDIR /app
 COPY . /app
-EXPOSE 8080
+EXPOSE 8081
 CMD exec gunicorn --bind :$PORT --workers 1 --worker-class uvicorn.workers.UvicornWorker --threads 8 main:app
