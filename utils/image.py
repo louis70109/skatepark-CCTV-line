@@ -13,7 +13,10 @@ def get_neihu_meiti_image():
     options = Options()
     options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
-
+    options.add_argument("--disable-gpu")
+    options.add_argument("window-size=1024,768")
+    options.add_argument("--no-sandbox")
+    
     options.page_load_strategy = 'none'
     driver = webdriver.Chrome(options=options)
 

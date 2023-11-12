@@ -316,10 +316,10 @@ async def handle_callback(request: Request):
                 "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
                 "content": b64_file,
                 "branch": "master"},
-            url=f"https://api.github.com/repos/{github.repo_name}/contents/images/image.png"
+            url=f"https://api.github.com/repos/{github.repo_name}/contents/images/{event.message.id}.png"
         )
         response_msg = res.json()
-        url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/image.png"
+        url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
         await line_bot_api.push_message(push_message_request=PushMessageRequest(
             to=event.source.user_id,
             messages=[ImageMessage(

@@ -5,3 +5,4 @@ firebase-admin
 requests
 selenium
 webdriver-manager
+chromedriver-binary==77.0.3865.40.0
