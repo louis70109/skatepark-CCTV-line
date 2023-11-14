@@ -7,7 +7,7 @@ import tempfile
 import requests
 from utils.github import Github
 
-from utils.image import get_neihu_meiti_image
+from utils.image import SkateParkImage
 
 if os.getenv('API_ENV') != 'production':
     from dotenv import load_dotenv
@@ -272,11 +272,13 @@ async def add_user(request: Request):
 async def add_user():
     return {'liffId': os.environ['LIFF_ID']}
 
+
 @app.get("/capture")
 async def capture():
-
+    pass
     image_b64 = get_neihu_meiti_image()
     return {'image': image_b64}
+
 
 @app.post("/webhooks/line")
 async def handle_callback(request: Request):
@@ -292,7 +294,7 @@ async def handle_callback(request: Request):
         raise HTTPException(status_code=400, detail="Invalid signature")
 
     for event in events:
-        print(event)
+        logging.info(event)
         if not isinstance(event, MessageEvent):
             continue
         if not isinstance(event.message, TextMessageContent):
@@ -301,31 +303,37 @@ async def handle_callback(request: Request):
         await line_bot_api.reply_message(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(text='請稍候...查詢中')]
+                messages=[TextMessage(
+                    text=f'請稍候...查詢「{event.message.text}」中',
+                    quoteToken=event.message.quote_token)]
             )
         )
-        b64_file = get_neihu_meiti_image()
-        github = Github()
-        res = requests.put(
-            headers={
-                "Accept": "application/vnd.github+json",
-                "Authorization": f"Bearer {os.getenv('GITHUB')}"
-            },
-            json={
-                "message": f"✨ Commit",
-                "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
-                "content": b64_file,
-                "branch": "master"},
-            url=f"https://api.github.com/repos/{github.repo_name}/contents/images/{event.message.id}.png"
-        )
-        response_msg = res.json()
-        url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
+        SkatePark = SkateParkImage()
+        b64_file = SkatePark.get_image(event.message.text)
+        try:
+            github = Github()
+            res = requests.put(
+                headers={
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": f"Bearer {os.getenv('GITHUB')}"
+                },
+                json={
+                    "message": f"✨ Commit",
+                    "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
+                    "content": b64_file,
+                    "branch": "master"},
+                url=f"https://api.github.com/repos/{github.repo_name}/contents/images/{event.message.id}.png"
+            )
+            # response_msg = res.json()
+            url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
+        except Exception as e:
+            logging.warning(f'Image upload to GitHub error, Error is: {e}')
         await line_bot_api.push_message(push_message_request=PushMessageRequest(
             to=event.source.user_id,
-            messages=[ImageMessage(
-                originalContentUrl=url,
-                previewImageUrl=url,
-                quoteToken=event.message.quote_token)],
+            messages=[
+                ImageMessage(
+                    originalContentUrl=url,
+                    previewImageUrl=url)],
         ))
     return 'OK'
 
