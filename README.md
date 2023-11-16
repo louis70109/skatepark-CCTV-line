@@ -12,29 +12,14 @@
 
 首先，請確保你的環境已經安裝 Python 3.7 或以上的版本。
 
-克隆這個專案到你的本地環境：
-
-git clone https://github.com/your_username/your_project.git
-切換到專案的目錄：
-
-bash
-复制代码
-
-cd your_project
-建立一個虛擬環境並啟動：
-
-bash
-复制代码
-
+Clone 這個專案到你的本地環境：
+```
+git clone git@github.com:gcp-serverless-workshop/notifier-line.git
+cd notifier-line/
 python3 -m venv venv
 source venv/bin/activate
-安裝專案所需的 Python 套件：
-
-bash
-复制代码
-
 pip install -r requirements.txt
-設定環境變數（將以下範例中的值替換為你的實際值）：
+```
 
 ```
 export LINE_CHANNEL_SECRET=your_line_channel_secret
