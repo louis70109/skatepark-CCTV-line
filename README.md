@@ -1,13 +1,15 @@
 # SkatePark 滑板場地查詢機器人
+
 這個專案是一個使用 FastAPI 建立的機器人，提供使用者查詢滑板場地資訊，並且將資訊以圖片的方式儲存至 Github。
 
 ## 功能
-- 
+
 - 使用者可以透過 LINE Bot 查詢滑板場地資訊
 - 機器人會將查詢結果以圖片的方式儲存至 Github
 - 使用者可以透過 API 管理使用者資訊。
 
 ## 安裝與執行
+
 首先，請確保你的環境已經安裝 Python 3.7 或以上的版本。
 
 克隆這個專案到你的本地環境：
@@ -41,6 +43,7 @@ export FIREBASE_CRED=your_firebase_credentials
 export LIFF_ID=your_liff_id
 export GITHUB=your_github_token
 ```
+
 ## 使用
 
 你可以透過以下 API 進行使用者資訊的管理：
