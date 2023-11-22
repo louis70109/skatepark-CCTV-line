@@ -299,42 +299,52 @@ async def handle_callback(request: Request):
             continue
         if not isinstance(event.message, TextMessageContent):
             continue
+        text = event.message.text
+        SkatePark = SkateParkImage()
 
-        await line_bot_api.reply_message(
+        if text == "入口":
+            await line_bot_api.reply_message(
             ReplyMessageRequest(
                 reply_token=event.reply_token,
-                messages=[TextMessage(
-                    text=f'請稍候...查詢「{event.message.text}」中',
-                    quoteToken=event.message.quote_token)]
+                messages=[TextMessage(text=SkatePark.get_name(),)]
             )
         )
-        SkatePark = SkateParkImage()
-        b64_file = SkatePark.get_image(event.message.text)
-        try:
-            github = Github()
-            res = requests.put(
-                headers={
-                    "Accept": "application/vnd.github+json",
-                    "Authorization": f"Bearer {os.getenv('GITHUB')}"
-                },
-                json={
-                    "message": f"✨ Commit",
-                    "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
-                    "content": b64_file,
-                    "branch": "master"},
-                url=f"https://api.github.com/repos/{github.repo_name}/contents/images/{event.message.id}.png"
+        else:    
+            await line_bot_api.reply_message(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(
+                        text=f'請稍候...查詢「{text}」中',
+                        quoteToken=event.message.quote_token)]
+                )
             )
-            # response_msg = res.json()
-            url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
-        except Exception as e:
-            logging.warning(f'Image upload to GitHub error, Error is: {e}')
-        await line_bot_api.push_message(push_message_request=PushMessageRequest(
-            to=event.source.user_id,
-            messages=[
-                ImageMessage(
-                    originalContentUrl=url,
-                    previewImageUrl=url)],
-        ))
+            
+            b64_file = SkatePark.get_image(event.message.text)
+            try:
+                github = Github()
+                res = requests.put(
+                    headers={
+                        "Accept": "application/vnd.github+json",
+                        "Authorization": f"Bearer {os.getenv('GITHUB')}"
+                    },
+                    json={
+                        "message": f"✨ Commit",
+                        "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
+                        "content": b64_file,
+                        "branch": "master"},
+                    url=f"https://api.github.com/repos/{github.repo_name}/contents/images/{event.message.id}.png"
+                )
+                # response_msg = res.json()
+                url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
+            except Exception as e:
+                logging.warning(f'Image upload to GitHub error, Error is: {e}')
+            await line_bot_api.push_message(push_message_request=PushMessageRequest(
+                to=event.source.user_id,
+                messages=[
+                    ImageMessage(
+                        originalContentUrl=url,
+                        previewImageUrl=url)],
+            ))
     return 'OK'
 
 

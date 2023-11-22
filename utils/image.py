@@ -15,7 +15,13 @@ class SkateParkImage:
             "永和綠寶石極限運動體驗場": "https://cctvatis3.ntpc.gov.tw/C000121"
         }
         self.url = "大直美堤極限公園"
-
+    
+    def get_name(self):
+        text = ''
+        for key, _value in self.url_dict.items():
+            text += f"{key}\n\n"
+        return text
+    
     def get_image(self, location):
         if self.url_dict.get(location) != None:
             self.url = self.url_dict[location]
