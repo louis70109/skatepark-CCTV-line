@@ -26,6 +26,10 @@
     "FIREBASE_CRED": {
       "description": "Firebase credential",
       "value": "'{\"type\":.....,}'"
+    },
+    "PORT": {
+      "description": "Port forward",
+      "value": "8080"
     }
   },
   "options": {
