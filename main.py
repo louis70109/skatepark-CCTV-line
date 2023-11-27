@@ -349,7 +349,7 @@ async def handle_callback(request: Request):
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', default=8000))
+    port = int(os.environ.get('PORT', default=8080))
     debug = True if os.environ.get(
         'API_ENV', default='develop') == 'develop' else False
     logging.info('Application will start...')
