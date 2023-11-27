@@ -14,5 +14,8 @@ RUN dpkg -i google-chrome-stable_current_amd64.deb; apt-get -fy install
 
 WORKDIR /app
 COPY . /app
+
+ENV PORT 8080 
+ENV HOST 0.0.0.0
 EXPOSE 8080
-CMD uvicorn main:app --host=0.0.0.0 --port=$PORT
+CMD uvicorn main:app --host=$HOST --port=$PORT
