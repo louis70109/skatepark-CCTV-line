@@ -106,16 +106,7 @@ async def handle_callback(request: Request):
                 messages=[TextMessage(text=SkatePark.get_name(),)]
             )
         )
-        else:    
-            await line_bot_api.reply_message(
-                ReplyMessageRequest(
-                    reply_token=event.reply_token,
-                    messages=[TextMessage(
-                        text=f'請稍候...查詢「{text}」中',
-                        quoteToken=event.message.quote_token)]
-                )
-            )
-            
+        else:
             b64_file = SkatePark.get_image(event.message.text)
             try:
                 github = Github()
@@ -138,10 +129,20 @@ async def handle_callback(request: Request):
             await line_bot_api.push_message(push_message_request=PushMessageRequest(
                 to=event.source.user_id,
                 messages=[
+                    ],
+            ))
+            await line_bot_api.reply_message(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[
+                        TextMessage(
+                        text=f'請稍候...查詢「{text}」中'),
                     ImageMessage(
                         originalContentUrl=url,
-                        previewImageUrl=url)],
-            ))
+                        previewImageUrl=url)
+                    ]
+                )
+            )
     return 'OK'
 
 
