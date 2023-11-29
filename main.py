@@ -126,20 +126,19 @@ async def handle_callback(request: Request):
                 url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
             except Exception as e:
                 logging.warning(f'Image upload to GitHub error, Error is: {e}')
-            await line_bot_api.push_message(push_message_request=PushMessageRequest(
-                to=event.source.user_id,
-                messages=[
-                    ],
-            ))
+            # await line_bot_api.push_message(push_message_request=PushMessageRequest(
+            #     to=event.source.user_id,
+            #     messages=[],
+            # ))
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
                     messages=[
                         TextMessage(
                         text=f'請稍候...查詢「{text}」中'),
-                    ImageMessage(
-                        originalContentUrl=url,
-                        previewImageUrl=url)
+                        ImageMessage(
+                            originalContentUrl=url,
+                            previewImageUrl=url)
                     ]
                 )
             )
