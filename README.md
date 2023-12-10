@@ -1,20 +1,31 @@
 # SkatePark 滑板場地查詢機器人
 
-這個專案是一個使用 FastAPI 建立的機器人，提供使用者查詢滑板場地資訊，並且將資訊以圖片的方式儲存至 Github
+這個專案是一個使用 FastAPI 建立的 LINE Bot，提供使用者查詢滑板場地資訊，並且將資訊以圖片的方式儲存至 Github，提供給 LINE Bot 所需輸出的網址，詳細流程請參考下圖
+
+![](https://raw.githubusercontent.com/louis70109/skatepark-CCTV-line/main/user-flow.png)
 
 ## 功能
 
 - 使用者可以透過 LINE Bot 查詢滑板場地資訊
 - 機器人會將查詢結果以圖片的方式儲存至 Github
-- 使用者可以透過 API 管理使用者資訊。
+- 使用者可以透過 API 拿取 CCTV 的截圖
 
-## 安裝與執行
+## 開發
 
-首先，請確保你的環境已經安裝 Python 3.7 或以上的版本。
+這個專案使用了以下的主要技術：
+
+FastAPI：建立 API
+LINE Messaging API：與使用者進行互動
+Github API：將查詢結果儲存至 Github
+
+## 安裝需求
+
+你需要 Python 3.7 或以上版本的環境來運行此應用程式，並確保安裝以下的 Python 套件：
 
 Clone 這個專案到你的本地環境：
+
 ```
-git clone git@github.com:gcp-serverless-workshop/notifier-line.git
+git clone https://github.com/louis70109/skatepark-CCTV-line.git
 cd notifier-line/
 python3 -m venv venv
 source venv/bin/activate
@@ -24,39 +35,16 @@ pip install -r requirements.txt
 ```
 export LINE_CHANNEL_SECRET=your_line_channel_secret
 export LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
-export FIREBASE_CRED=your_firebase_credentials
-export LIFF_ID=your_liff_id
 export GITHUB=your_github_token
 ```
 
-## 使用
-
-你可以透過以下 API 進行使用者資訊的管理：
-
-GET /api/user?q={user_id}：取得指定使用者的資訊。
-POST /api/user：新增或更新使用者的資訊。
-你也可以透過 LINE Bot 查詢滑板場地資訊，查詢結果會以圖片的方式儲存至 Github，並回傳圖片的網址。
-
-## 開發
-
-這個專案使用了以下的主要技術：
-
-FastAPI：建立 API。
-Firebase：儲存使用者資訊。
-LINE Messaging API：與使用者進行互動。
-Github API：將查詢結果儲存至 Github。
-
-## 安裝需求
-
-你需要 Python 3.7 或以上版本的環境來運行此應用程式，並確保安裝以下的 Python 套件：
-
-透過 ngrok 建立暫時含有 https 的網址，並設定在 LINE Developer Console
+透過 ngrok 建立暫時含有 https 的網址，並設定在 [LINE Developer Console](https://developers.line.biz/console) Webhook 欄位當中
 
 ```
 ngrok http 8080
 ```
 
-將 Domain 設定於 LINE Developer Console
+將 Domain 設定於 [LINE Developer Console](https://developers.line.biz/console)
 
 1. 前往 LINE Developer Console 網站：https://developers.line.biz/console/
 2. 點選右上角的「Log in」按鈕，登入您的 LINE 帳號。如果您還沒有 LINE 帳號，您需要先建立一個。
@@ -69,7 +57,7 @@ ngrok http 8080
 9. 還有一個重要的設定是「Use webhooks」。如果您希望您的 bot 可以接收來自 LINE 的訊息，您需要打開這個設定，並輸入您的 webhook URL。您的 webhook URL 是一個可以接收 POST 請求的伺服器網址。
 10. 之後，您可以在 LINE app 中加入您剛剛建立的 bot 為好友，並開始測試。
 
-## Google Cloud Platform 佈署
+## Google Cloud Platform 部署
 
 [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
 
@@ -100,4 +88,4 @@ gcloud run deploy notifier-line-1 --source .
 
 ## LICENSE
 
-請見 LICENSE 文件。
+請見 LICENSE 文件
