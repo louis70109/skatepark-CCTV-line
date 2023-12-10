@@ -25,6 +25,11 @@
       "description": "Github access key",
       "value": "ghp_xxxxx",
       "required": true
+    },
+    "EMAIL": {
+      "description": "GitHub Email account",
+      "value": "aaa@gmail.com",
+      "required": true
     }
   },
   "options": {
