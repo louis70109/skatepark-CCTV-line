@@ -57,7 +57,7 @@ line_bot_api = AsyncMessagingApi(async_api_client)
 parser = WebhookParser(channel_secret)
 
 
-@app.get("/")
+@app.get("/health")
 async def health():
     return 'ok'
 
