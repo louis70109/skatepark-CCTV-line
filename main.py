@@ -14,7 +14,6 @@ if os.getenv('API_ENV') != 'production':
 
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
 
 from linebot.v3.webhook import WebhookParser
 from linebot.v3.messaging import (
@@ -22,7 +21,6 @@ from linebot.v3.messaging import (
     AsyncMessagingApi,
     Configuration,
     ReplyMessageRequest,
-    PushMessageRequest,
     TextMessage,
     ImageMessage
 )
@@ -40,15 +38,6 @@ logging.basicConfig(level=os.getenv('LOG', 'WARNING'))
 logger = logging.getLogger(__file__)
 
 app = FastAPI()
-
-# TODO: check CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
@@ -68,14 +57,10 @@ line_bot_api = AsyncMessagingApi(async_api_client)
 parser = WebhookParser(channel_secret)
 
 
-@app.get("/api/liff")
-async def add_user():
-    return {'liffId': os.environ['LIFF_ID']}
-
-
 @app.get("/")
 async def health():
     return 'ok'
+
 
 @app.post("/webhooks/line")
 async def handle_callback(request: Request):
@@ -101,11 +86,11 @@ async def handle_callback(request: Request):
 
         if text == "入口":
             await line_bot_api.reply_message(
-            ReplyMessageRequest(
-                reply_token=event.reply_token,
-                messages=[TextMessage(text=SkatePark.get_name(),)]
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=SkatePark.get_name(),)]
+                )
             )
-        )
         else:
             b64_file = SkatePark.get_image(event.message.text)
             try:
@@ -126,16 +111,14 @@ async def handle_callback(request: Request):
                 url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
             except Exception as e:
                 logging.warning(f'Image upload to GitHub error, Error is: {e}')
-            # await line_bot_api.push_message(push_message_request=PushMessageRequest(
-            #     to=event.source.user_id,
-            #     messages=[],
-            # ))
+
+            logger.info('Ready to push data...')
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
                     messages=[
                         TextMessage(
-                        text=f'請稍候...查詢「{text}」中'),
+                            text=f'「{text}」...圖片如下'),
                         ImageMessage(
                             originalContentUrl=url,
                             previewImageUrl=url)
