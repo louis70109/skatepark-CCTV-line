@@ -1,7 +1,6 @@
 fastapi
 uvicorn[standard]
 line-bot-sdk==3.5.0
-firebase-admin
 requests
 selenium
 webdriver-manager
