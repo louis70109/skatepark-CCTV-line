@@ -3,6 +3,7 @@ import os
 import sys
 
 import requests
+from utils.flex import entrance
 from utils.github import Github
 
 from utils.image import SkateParkImage
@@ -83,15 +84,16 @@ async def handle_callback(request: Request):
             continue
         text = event.message.text
         SkatePark = SkateParkImage()
-
+        park_list = SkatePark.get_name_list()
+        print(text in park_list)
         if text == "入口":
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
-                    messages=[TextMessage(text=SkatePark.get_name(),)]
+                    messages=[entrance(park_list)]
                 )
             )
-        else:
+        elif text in park_list:
             b64_file = SkatePark.get_image(event.message.text)
             try:
                 github = Github()
@@ -123,6 +125,13 @@ async def handle_callback(request: Request):
                             originalContentUrl=url,
                             previewImageUrl=url)
                     ]
+                )
+            )
+        else:
+            await line_bot_api.reply_message(
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=text)]
                 )
             )
     return 'OK'

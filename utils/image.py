@@ -9,17 +9,17 @@ from webdriver_manager.chrome import ChromeDriverManager
 class SkateParkImage:
     def __init__(self):
         self.url_dict = {
-            "南港台北市極限運動訓練中心": "https://cctv.bote.gov.taipei:8501/mjpeg/363",
+            "南港極限運動場": "https://cctv.bote.gov.taipei:8501/mjpeg/363",
             "內湖極限公園": "https://cctv.bote.gov.taipei:8501/mjpeg/117",
             "大直美堤極限公園": "https://heocctv2.gov.taipei/channel68",
             "永和綠寶石極限運動體驗場": "https://cctvatis3.ntpc.gov.tw/C000121"
         }
         self.url = "大直美堤極限公園"
     
-    def get_name(self):
-        text = ''
+    def get_name_list(self):
+        text = []
         for key, _value in self.url_dict.items():
-            text += f"{key}\n\n"
+            text.append(key)
         return text
     
     def get_image(self, location):
