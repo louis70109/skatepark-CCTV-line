@@ -57,6 +57,18 @@ ngrok http 8080
 9. 還有一個重要的設定是「Use webhooks」。如果您希望您的 bot 可以接收來自 LINE 的訊息，您需要打開這個設定，並輸入您的 webhook URL。您的 webhook URL 是一個可以接收 POST 請求的伺服器網址。
 10. 之後，您可以在 LINE app 中加入您剛剛建立的 bot 為好友，並開始測試。
 
+### 本地端爬取 Skatepark
+
+由於 cronjob 是部署在 Cloud Function 上，若要在本地端測試上傳圖片至 GitHub，請參考以下指令：
+
+```
+python -m cron.skatepark
+```
+
+> 爬取檔案時間避免 cronjob 浪費，因此設定 30 分鐘跑一次，檔案名稱也是以整天、30分為界線，其餘時間點則不會爬取
+>
+> LINE Bot 也會抓取每 30 分鐘的圖片(ex: 0:00, 0:30)，若抓不到的話可能得再稍等
+
 ## Google Cloud Platform 部署
 
 [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://deploy.cloud.run)
