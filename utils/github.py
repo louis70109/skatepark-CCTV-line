@@ -1,5 +1,7 @@
 import logging
-import requests, base64, os
+import requests
+import base64
+import os
 from datetime import datetime
 logger = logging.getLogger(__name__)
 

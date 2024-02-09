@@ -2,11 +2,13 @@ import logging
 import os
 import sys
 
-import requests
+from urllib.parse import quote
+from utils.common import check_location_in_message, get_current_time_period
 from utils.flex import entrance
 from utils.github import Github
 
 from utils.image import SkateParkImage
+from utils.weather import get_current_weather, get_weather_data, simplify_data
 
 if os.getenv('API_ENV') != 'production':
     from dotenv import load_dotenv
@@ -85,7 +87,7 @@ async def handle_callback(request: Request):
         text = event.message.text
         SkatePark = SkateParkImage()
         park_list = SkatePark.get_name_list()
-        print(text in park_list)
+        logger.debug("Event message in list:" + text in park_list)
         if text == "入口":
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
@@ -94,33 +96,33 @@ async def handle_callback(request: Request):
                 )
             )
         elif text in park_list:
-            b64_file = SkatePark.get_image(event.message.text)
-            try:
-                github = Github()
-                res = requests.put(
-                    headers={
-                        "Accept": "application/vnd.github+json",
-                        "Authorization": f"Bearer {os.getenv('GITHUB')}"
-                    },
-                    json={
-                        "message": f"✨ Commit",
-                        "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
-                        "content": b64_file,
-                        "branch": "master"},
-                    url=f"https://api.github.com/repos/{github.repo_name}/contents/images/{event.message.id}.png"
-                )
-                # response_msg = res.json()
-                url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{event.message.id}.png"
-            except Exception as e:
-                logging.warning(f'Image upload to GitHub error, Error is: {e}')
+            current_timestamp = get_current_time_period()
+            
+            github = Github()
+
+            url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{quote(text)}/{current_timestamp}.png"
 
             logger.info('Ready to push data...')
+            logger.info('Crawler Weather Open Data...')
+
+            location = check_location_in_message(text)
+            print(location)
+            weather_data = get_weather_data(location)
+            simplified_data = simplify_data(weather_data)
+            current_weather = get_current_weather(simplified_data)
+            logger.debug('The Data is: ' + str(current_weather))
+            if current_weather is not None:
+                text = f'氣候: {current_weather["Wx"]}\n降雨機率: {current_weather["PoP"]}\n體感: {current_weather["CI"]}\n「{text}」...圖片如下'
+            else:
+                text = f'「{text}」...圖片如下'
+            print("@@@@@@@@@@@@@@@@@")
+            print(url)
+            print("@@@@@@@@@@@@@@@@@")
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
                     messages=[
-                        TextMessage(
-                            text=f'「{text}」...圖片如下'),
+                        TextMessage(text=text),
                         ImageMessage(
                             originalContentUrl=url,
                             previewImageUrl=url)
