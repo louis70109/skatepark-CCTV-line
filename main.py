@@ -25,7 +25,10 @@ from linebot.v3.messaging import (
     Configuration,
     ReplyMessageRequest,
     TextMessage,
-    ImageMessage
+    ImageMessage,
+    QuickReply,
+    QuickReplyItem,
+    MessageAction,
 )
 from linebot.v3.exceptions import (
     InvalidSignatureError
@@ -97,35 +100,46 @@ async def handle_callback(request: Request):
             )
         elif text in park_list:
             current_timestamp = get_current_time_period()
-            
-            github = Github()
 
+            github = Github()
             url = f"https://raw.githubusercontent.com/{github.repo_name}/master/images/{quote(text)}/{current_timestamp}.png"
 
             logger.info('Ready to push data...')
             logger.info('Crawler Weather Open Data...')
 
             location = check_location_in_message(text)
-            print(location)
+            logger.debug('Location is: ' + location)
             weather_data = get_weather_data(location)
             simplified_data = simplify_data(weather_data)
             current_weather = get_current_weather(simplified_data)
+
             logger.debug('The Data is: ' + str(current_weather))
             if current_weather is not None:
                 text = f'氣候: {current_weather["Wx"]}\n降雨機率: {current_weather["PoP"]}\n體感: {current_weather["CI"]}\n「{text}」...圖片如下'
             else:
                 text = f'「{text}」...圖片如下'
-            print("@@@@@@@@@@@@@@@@@")
-            print(url)
-            print("@@@@@@@@@@@@@@@@@")
+
+            logger.debug(url)
+
+            quick_reply_items = []
+            for key, _value in SkatePark.url_dict.items():
+                quick_reply_items.append(
+                    QuickReplyItem(
+                        action=MessageAction(label=key, text=key)
+                    ))
+
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
                     messages=[
-                        TextMessage(text=text),
+                        TextMessage(
+                            text=text,
+                            quickReply=QuickReply(
+                                items=quick_reply_items
+                            )),
                         ImageMessage(
                             originalContentUrl=url,
-                            previewImageUrl=url)
+                            previewImageUrl=url),
                     ]
                 )
             )
