@@ -1,5 +1,4 @@
 import re
-from datetime import datetime
 
 def check_location_in_message(message):
     locations = [

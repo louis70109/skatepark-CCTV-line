@@ -10,13 +10,17 @@ class Github:
         self.today = datetime.now().strftime("%Y-%m-%d")
         self.repo_name = 'louis70109/ideas-tree'  # change to your repo name
         self.file = self.today + '.md'
+        self.github = os.getenv('GITHUB', None)
 
-    def get_record(self) -> dict:
-        git_url = f"https://api.github.com/repos/{self.repo_name}/contents/{self.file}"
+    def get_record(self, path=None) -> dict:
+        if path is None:
+            path = self.file
+        git_url = f"https://api.github.com/repos/{self.repo_name}/contents/{path}"
+        logger.info(git_url)
         res = requests.get(
             headers={
                 "Accept": "application/vnd.github+json",
-                "Authorization": f"token {os.getenv('GITHUB')}"
+                "Authorization": f"token {self.github}"
             },
             url=git_url
         )
@@ -40,7 +44,7 @@ class Github:
         res = requests.put(
             headers={
                 "Accept": "application/vnd.github.VERSION.raw",
-                "Authorization": f"token {os.getenv('GITHUB')}"
+                "Authorization": f"token {self.github}"
             },
             json={
                 "message": f"✨{self.today} Commit",
@@ -54,11 +58,53 @@ class Github:
             return None
         return res.json()
 
+    def upload_file(self, folder, file_name, b64_file):
+        try:
+            res = requests.put(
+                headers={
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": f"Bearer {self.github}"
+                },
+                json={
+                    "message": "✨ Commit from CCTV LINE Bot",
+                    "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
+                    "content": b64_file,
+                    "branch": "master"},
+                url=f"https://api.github.com/repos/{self.repo_name}/contents/images/{folder}/{file_name}.png"
+            )
+            response_msg = res.json()
+            logger.debug('GitHub upload file is: ')
+            logger.debug(response_msg)
+            return response_msg
+        except Exception as e:
+            logger.warning(f'Image upload to GitHub error, Error is: {e}')
+    
+    def delete_file(self, folder, file_name, sha):
+        try:
+
+            res = requests.delete(
+                headers={
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": f"Bearer {self.github}"
+                },
+                json={
+                    "message": "✨ Delete from CCTV LINE Bot",
+                    "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
+                    "branch": "master",'sha': sha},
+                url=f"https://api.github.com/repos/{self.repo_name}/contents/images/{folder}/{file_name}.png"
+            )
+            response_msg = res.json()
+            logger.debug('GitHub Delete file is: ')
+            logger.debug(response_msg)
+            return response_msg
+        except Exception as e:
+            logger.warning(f'Image upload to GitHub error, Error is: {e}')
+
     @staticmethod
     def markdown_to_html(contents):
         res = requests.post(headers={
             "Accept": "application/vnd.github+json",
-            "Authorization": f"token {os.getenv('GITHUB')}"
+            "Authorization": f"token {self.github}"
         }, url="https://api.github.com/markdown",
         json={"text": contents})
         
