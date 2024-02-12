@@ -16,23 +16,8 @@ def check_location_in_message(message):
 
     for location in locations:
         if re.search(local[0], location):
-            print('____________')
-            print(location)
             return location
         else:
             location
 
     return locations[0]
-
-
-def get_current_time_period():
-    now = datetime.now()
-
-    # 如果當前的分鐘數小於30，則將分鐘數設置為00，否則設置為30
-    if now.minute < 30:
-        current_period = now.replace(minute=0, second=0, microsecond=0)
-    else:
-        current_period = now.replace(minute=30, second=0, microsecond=0)
-
-    # 返回當前的時間段的timestamp
-    return current_period.timestamp()
