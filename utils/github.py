@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 logger = logging.getLogger(__name__)
 
+
 class Github:
     def __init__(self):
         self.today = datetime.now().strftime("%Y-%m-%d")
@@ -54,7 +55,8 @@ class Github:
             url=git_url
         )
         if res.status_code >= 400:
-            logger.warning(f'❌ GitHub Record create || update fail. Info: {res.json()}')
+            logger.warning(
+                f'❌ GitHub Record create || update fail. Info: {res.json()}')
             return None
         return res.json()
 
@@ -78,7 +80,7 @@ class Github:
             return response_msg
         except Exception as e:
             logger.warning(f'Image upload to GitHub error, Error is: {e}')
-    
+
     def delete_file(self, folder, file_name, sha):
         try:
 
@@ -90,7 +92,7 @@ class Github:
                 json={
                     "message": "✨ Delete from CCTV LINE Bot",
                     "committer": {"name": "NiJia Lin", "email": "louis70109@gmail.com"},
-                    "branch": "master",'sha': sha},
+                    "branch": "master", 'sha': sha},
                 url=f"https://api.github.com/repos/{self.repo_name}/contents/images/{folder}/{file_name}.png"
             )
             response_msg = res.json()
@@ -106,14 +108,10 @@ class Github:
             "Accept": "application/vnd.github+json",
             "Authorization": f"token {self.github}"
         }, url="https://api.github.com/markdown",
-        json={"text": contents})
-        
+            json={"text": contents})
+
         if res.status_code == 200:
             return res.text
-        if res.status_code>=400:
+        if res.status_code >= 400:
             logger.warning(f'❌ Markdown format error. Info: {res.json()}')
             return None
-    
-    @staticmethod
-    def record_judgement():
-        pass
