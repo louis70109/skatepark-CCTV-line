@@ -13,6 +13,7 @@ class SkateParkImage:
         self.url_dict = {
             "台北_南港極限運動場": "https://cctv.bote.gov.taipei:8501/mjpeg/363",
             "台北_內湖極限公園": "https://cctv.bote.gov.taipei:8501/mjpeg/117",
+            "台北_彩虹輪公園": "https://cctv.bote.gov.taipei:8501/mjpeg/053",
             "台北_大直美堤極限公園": "https://heocctv2.gov.taipei/channel68",
             "新北_永和綠寶石極限運動體驗場": "https://cctvatis3.ntpc.gov.tw/C000121",
             "台中": None,
