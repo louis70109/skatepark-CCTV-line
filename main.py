@@ -116,7 +116,7 @@ async def handle_callback(request: Request):
 
             logger.debug('The Data is: ' + str(current_weather))
             if current_weather is not None:
-                text = f'位置: {location}\n氣候: {current_weather["Wx"]}\n降雨機率: {current_weather["PoP"]}\n體感: {current_weather["CI"]}\n「{text}」...圖片如下'
+                text = f'☝️「{text}」...\n位置: {location}\n氣候: {current_weather["Wx"]}\n降雨機率: {current_weather["PoP"]}\n體感: {current_weather["CI"]}'
             else:
                 text = f'「{text}」...圖片如下'
 
@@ -126,10 +126,18 @@ async def handle_callback(request: Request):
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
                     messages=[
-                        TextMessage(text=text),
                         ImageMessage(
                             originalContentUrl=url,
-                            previewImageUrl=url),
+                            previewImageUrl=url
+                        ),
+                        TextMessage(
+                            text=text,
+                            quick_reply=QuickReply(items=[
+                                QuickReplyItem(
+                                    action=MessageAction(label="入口", text="入口")
+                                )]
+                            )
+                        ),
                     ]
                 )
             )
@@ -137,7 +145,14 @@ async def handle_callback(request: Request):
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
                     reply_token=event.reply_token,
-                    messages=[TextMessage(text=text)]
+                    messages=[TextMessage(
+                        text=text,
+                        quick_reply=QuickReply(items=[
+                            QuickReplyItem(
+                                action=MessageAction(label="入口", text="入口")
+                            )])
+                        )
+                    ]
                 )
             )
     return 'OK'
