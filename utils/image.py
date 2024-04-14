@@ -22,7 +22,8 @@ class SkateParkImage:
             # "台中 屋馬": "https://ocam.live/url.php?url=https%3A%2F%2Ftcnvr5.taichung.gov.tw%3A7001%2Fmedia%2F00-0F-7C-16-C9-AE.mpjpeg%3Fresolution%3D240p%26auth%3DcHVibGljdmlld2VyOjYxMGYyOGFiZWU0MDA6ZTk5NTZhMGYyNjEwMmVjODU1NzFmNmI1NzBkYmIwYTU",
             # "台中 豐富公園": "https://ocam.live/url.php?url=https%3A%2F%2Ftcnvr3.taichung.gov.tw%3A7001%2Fmedia%2F00-0F-7C-17-97-CA.mpjpeg%3Fresolution%3D240p%26auth%3DcHVibGljdmlld2VyOjYxMGYyOTc0ZTE1ZDg6MWY1OTFiOWZmNmNmYWQ2M2E1ZWRmYWNiZTZjZTVjYjk",
             # "台中_中正公園": "https://tcnvr3.taichung.gov.tw:7001/media/00-0F-7C-18-21-DC.mpjpeg?resolution=240p&auth=cHVibGljdmlld2VyOjYxMGYzYjI2ZDcwYjA6YjEzYmU3MGQ4YmFlMzk0NDIyOTZmNjk0ZGFkOWE5MzA"
-
+            # "長野": "https://www.youtube.com/watch?v=vPCkonkRRY0",
+            # "札幌": "https://www.youtube.com/watch?v=CF1vS8DdBIk"
         }
         self.url = "https://heocctv2.gov.taipei/channel68"
 

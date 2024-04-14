@@ -73,13 +73,3 @@ def get_current_weather(simplified_data):
 
     # 如果沒有找到任何天氣資訊，則返回None
     return None
-
-
-# 使用範例
-# weather_data = get_weather_data("臺北市")
-# # print(weather_data)
-# simplified_data = simplify_data(weather_data)
-# # print(simplified_data)
-# # 使用範例
-# current_weather = get_current_weather(simplified_data)
-# print(current_weather)
