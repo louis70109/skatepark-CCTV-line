@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-line-bot-sdk==3.5.0
+line-bot-sdk==3.11.0
 requests
 selenium
 webdriver-manager

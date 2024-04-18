@@ -29,6 +29,7 @@ from linebot.v3.messaging import (
     QuickReply,
     QuickReplyItem,
     MessageAction,
+    ShowLoadingAnimationRequest
 )
 from linebot.v3.exceptions import (
     InvalidSignatureError
@@ -80,13 +81,14 @@ async def handle_callback(request: Request):
         events = parser.parse(body, signature)
     except InvalidSignatureError:
         raise HTTPException(status_code=400, detail="Invalid signature")
-
     for event in events:
         logging.info(event)
         if not isinstance(event, MessageEvent):
             continue
         if not isinstance(event.message, TextMessageContent):
             continue
+        await line_bot_api.show_loading_animation(ShowLoadingAnimationRequest(chatId=event.source.user_id, loadingSeconds=5))
+
         text = event.message.text
         SkatePark = SkateParkImage()
         park_list = SkatePark.get_name_list()
