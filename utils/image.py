@@ -14,7 +14,7 @@ class SkateParkImage:
             "台北_南港極限運動場": "https://cctv.bote.gov.taipei:8501/mjpeg/363",
             "台北_內湖極限公園": "https://cctv.bote.gov.taipei:8501/mjpeg/117",
             "台北_彩虹輪公園": "https://cctv.bote.gov.taipei:8501/mjpeg/053",
-            "台北_大直美堤極限公園": "https://heocctv2.gov.taipei/channel68",
+            "台北_大直美堤極限公園": "https://cctv.bote.gov.taipei:8501/mjpeg/147",
             "新北_永和綠寶石極限運動體驗場": "https://cctvatis3.ntpc.gov.tw/C000121",
             "台中": None,
             # "台中 拾七": "https://ocam.live/url.php?url=https%3A%2F%2Ftcnvr5.taichung.gov.tw%3A7001%2Fmedia%2F00-0F-7C-14-BE-F0.mpjpeg%3Fresolution%3D240p%26auth%3DcHVibGljdmlld2VyOjYxMGYyN2E2ZmVlZjA6ZTIxYzNjZTU4ZmUzMzAyYTdmMWM0YTJhMDkzY2ZiZjc",
