@@ -5,3 +5,6 @@ requests
 selenium
 webdriver-manager
 chromedriver-binary==122.0.6259.0.0
+pillow
+google.generativeai
+grpcio

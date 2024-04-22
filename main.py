@@ -3,7 +3,7 @@ import os
 import sys
 
 from urllib.parse import quote
-from utils.common import check_location_in_message
+from utils.common import check_image_wet, check_location_in_message
 from utils.flex import entrance
 from utils.github import Github
 
@@ -87,7 +87,7 @@ async def handle_callback(request: Request):
             continue
         if not isinstance(event.message, TextMessageContent):
             continue
-        await line_bot_api.show_loading_animation(ShowLoadingAnimationRequest(chatId=event.source.user_id, loadingSeconds=5))
+        await line_bot_api.show_loading_animation(ShowLoadingAnimationRequest(chatId=event.source.user_id, loadingSeconds=20))
 
         text = event.message.text
         SkatePark = SkateParkImage()
@@ -121,8 +121,11 @@ async def handle_callback(request: Request):
                 text = f'☝️「{text}」...\n位置: {location}\n氣候: {current_weather["Wx"]}\n降雨機率: {current_weather["PoP"]}\n體感: {current_weather["CI"]}'
             else:
                 text = f'「{text}」...圖片如下'
-
             logger.debug(url)
+
+            if location in ['臺北市', '新北市']:
+                is_wet = check_image_wet(url)
+                text = text + f"\n地板濕: {is_wet}"
 
             await line_bot_api.reply_message(
                 ReplyMessageRequest(
@@ -153,7 +156,7 @@ async def handle_callback(request: Request):
                             QuickReplyItem(
                                 action=MessageAction(label="入口", text="入口")
                             )])
-                        )
+                    )
                     ]
                 )
             )

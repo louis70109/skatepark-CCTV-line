@@ -1,4 +1,9 @@
 import re
+import os
+import requests
+from PIL import Image
+from io import BytesIO
+import google.generativeai as genai
 
 def check_location_in_message(message):
     locations = [
@@ -20,3 +25,21 @@ def check_location_in_message(message):
             location
 
     return locations[0]
+
+
+def check_image_wet(url="https://github.com/louis70109/ideas-tree/blob/master/images/%E5%8F%B0%E5%8C%97_%E5%A4%A7%E7%9B%B4%E7%BE%8E%E5%A0%A4%E6%A5%B5%E9%99%90%E5%85%AC%E5%9C%92/default.png"):
+    genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        image_data = response.content
+        image = Image.open(BytesIO(image_data))
+
+        model = genai.GenerativeModel('gemini-pro-vision')
+        response = model.generate_content([
+            "Does following image looks moist? Reply Yes or No in traditional chinese",
+            image
+        ])
+        return response.text
+    return 'None'
+
