@@ -1,8 +1,7 @@
 import logging
 import os
-import time
-from utils.github import Github
-from utils.image import SkateParkImage
+from github import Github
+from image import SkateParkImage
 
 logging.basicConfig(level=os.getenv('LOG', 'DEBUG'))
 logger = logging.getLogger(__name__)
@@ -13,6 +12,8 @@ park_list = SkatePark.get_name_list()
 
 for park in park_list:
     logger.info(park)
+    if park == '台中':
+        break
     try:
         b64_file = SkatePark.get_image(location=park)
 
@@ -31,9 +32,9 @@ for park in park_list:
         delete_result = github.delete_file(park, "default", sha=file_sha)
         logger.info('Delete file data status: ' +
                     str(delete_result.get("content")))
-    time.sleep(1)
+
     if b64_file is not None:
         upload_result = github.upload_file(park, "default", b64_file)
         logger.info('Upload file status: ' +
                     str(upload_result.get("content") is not None))
-    time.sleep(1)
+
