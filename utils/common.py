@@ -35,7 +35,7 @@ def check_image_wet(url="https://github.com/louis70109/ideas-tree/blob/master/im
         image_data = response.content
         image = Image.open(BytesIO(image_data))
 
-        model = genai.GenerativeModel(gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content([
             "Does the following image look moist? Reply Yes or No in traditional Chinese",
             image
